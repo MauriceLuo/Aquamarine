@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "OPENCV CAMERAS",
+			"path": "."
+		},
+		{
+			"name": "pixels",
+			"path": "../pixels"
+		}
+	],
+	"settings": {}
+}
