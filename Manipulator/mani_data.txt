@@ -1,0 +1,35 @@
+Maestro Channel PWM Range left
+
+Wrist:
+- Min = 1560.0 µs (170º) （lowest）
+- Level = 985.0 µs (115º)
+- Max = 730 µs high
+
+Arm:
+- Min = 784.0 (780) µs (0º) 
+- Max = 2000 µs
+
+Mani:
+- Opened = abs lim 855 （rec900 ）µs
+- Closed = 1650 (1646) µs
+
+
+Maestro Channel PWM Range right (inverted)
+
+Base:
+- 2000是往左
+- ⁠1500 idle
+- 1000是往右
+
+Wrist:
+- Min = 1010.0 µs (170º)
+- Level = 1590.0 µs (115º)
+- Max = 1930.0 µs （highest）
+
+Arm:
+- Min = 2380 µs (0º)  lowest
+- Max = 908 µs
+
+Mani:
+- Opened = 1620 µs
+- Closed = 810 () µs
