@@ -1,21 +1,10 @@
-import serial
+import serial # type: ignore
 import time
 import pygame
 import sys
 import math
 import manipulator_library_v2 as mani
 import Aquamarine2425_gui_v1_1 as gui
-
-pygame.init()
-pygame.joystick.init()
-
-print(pygame.joystick.get_count())
-
-joy = pygame.joystick.Joystick(0)
-joy.init()
-
-print(f"{joy.get_name()} is connected")
-
 
 
 def map_value(value, old_min, old_max, new_min, new_max):
@@ -162,6 +151,18 @@ right_config = {
 
 
 if __name__ == '__main__':
+        
+    pygame.init()
+    pygame.joystick.init()
+
+    print(pygame.joystick.get_count())
+
+    joy = pygame.joystick.Joystick(0)
+    joy.init()
+
+    print(f"{joy.get_name()} is connected")
+
+
     rs485 = serial.Serial('/dev/ttyAMA0', 57600, timeout=0)
     if (rs485.isOpen() == False):
         rs485. open()
