@@ -4,9 +4,15 @@ import numpy as np
 import subprocess
 
 def map_range(x, in_min, in_max, out_min, out_max):
+    """Maps a value from one range to another."""
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
 def deadzoneNormalise(input_value, minimum, maximum):
+    """
+    Applies a deadzone to the input value. Values between `minimum` and `maximum` are set to 0.
+    Values below `minimum` are mapped from [-1.0, minimum] to [-1.0, 0].
+    Values above `maximum` are mapped from [maximum, 1.0] to [0, 1.0].
+    """
     if minimum < -1.0 or maximum > 1.0 or minimum >= maximum:
         raise ValueError("Invalid minimum or maximum range")
     
@@ -31,10 +37,12 @@ class RotateControl:
     def update(self, axis_value):
         self.axis_value = deadzoneNormalise(axis_value, -self.deadzone, self.deadzone)
         
+        """
         if not self.invert:
             delta_pwm = self.axis_value * self.step
         elif self.invert:
-            delta_pwm = self.axis_value * self.step * -1
+        """
+        delta_pwm = self.axis_value * self.step * -1
             
         self.__current_pwm = np.clip(
             self.__current_pwm + delta_pwm,
@@ -42,6 +50,10 @@ class RotateControl:
             self.pwm_max
         )
     
+    def reset(self):
+        self.__current_pwm = self.init_pwm
+        return int(self.__current_pwm)
+
     def pwm(self):
         return int(self.__current_pwm)
 
@@ -53,6 +65,7 @@ class ArmControl:
         self.invert = invert
         self.step = step
         self.deadzone = deadzone
+        self.init_pwm = init_pwm
         self.__current_pwm = init_pwm
     
     def update(self, axis_value):
@@ -68,6 +81,10 @@ class ArmControl:
             self.pwm_min,
             self.pwm_max
         )
+    
+    def reset(self):
+        self.__current_pwm = self.init_pwm
+        return int(self.__current_pwm)
     
     def pwm(self):
         return int(self.__current_pwm)
@@ -103,9 +120,9 @@ class WristControl:
             self.offset = np.clip(
                 self.offset + delta * self.step,
                 -(self.pwm_max - self.init_pwm - delta_arm),
-                -(self.pwm_min - self.init_pwm + delta_arm)
+                -(self.pwm_min - self.init_pwm - delta_arm)
             )
-            self.__current_pwm = (self.arm_controller.pwm() - self.arm_pwm_min + self.init_pwm) - self.offset
+            self.__current_pwm = delta_arm  + self.init_pwm - self.offset
         elif self.invert :
             delta_arm = self.arm_pwm_max - self.arm_controller.pwm()
             self.offset = np.clip(
@@ -113,7 +130,7 @@ class WristControl:
                 self.pwm_min - self.init_pwm + delta_arm,
                 self.pwm_max - self.init_pwm + delta_arm
             )
-            self.__current_pwm = (self.init_pwm - (self.arm_pwm_max - self.arm_controller.pwm())) + self.offset
+            self.__current_pwm = self.init_pwm - delta_arm + self.offset
 
         self.__current_pwm = np.clip(
             self.__current_pwm,
@@ -121,6 +138,11 @@ class WristControl:
             self.pwm_max
         )
         
+    def reset(self):
+        self.offset = 0
+        self.__current_pwm = self.init_pwm
+        return int(self.__current_pwm)
+    
     def pwm(self):
         return int(self.__current_pwm)
 
@@ -154,6 +176,10 @@ class ManipulatorControl:
                 self.pwm_max
             )
     
+    def reset(self):
+        self.__current_pwm = self.init_pwm
+        return int(self.__current_pwm)
+    
     def pwm(self):
         return int(self.__current_pwm)
     
@@ -184,7 +210,7 @@ class RoboticArm:
             pwm_range=config['wrist_pwm_range'],
             arm_controller=self.arm,
             arm_pwm_range=config['arm_pwm_range'],
-            arm_current_pwm=self.arm.pwm(),
+            arm_current_pwm=self.arm.pwm,
             invert=config.get('is_right', False),
             step = config['wrist_step'],
             control_config=config['wrist_control']
@@ -220,32 +246,42 @@ class RoboticArm:
 
     def get_pwm(self):
         return {
-            'arm': self.arm.pwm(),
-            'rotate': self.rotate.pwm(),
-            'wrist': self.wrist.pwm(),
-            'manipulator': self.manipulator.pwm()
+            'arm': self.arm.pwm() *4,
+            'rotate': self.rotate.pwm() *4,
+            'wrist': self.wrist.pwm() *4,
+            'manipulator': self.manipulator.pwm() *4
+        }
+    
+    def reset(self):
+        return {
+            'arm': self.arm.reset() *4,
+            'rotate': self.rotate.reset() *4,
+            'wrist': self.wrist.reset() *4,
+            'manipulator': self.manipulator.reset() *4
         }
 
 
 class DualArmSystem:
-    def __init__(self, left_config, right_config, joystick_num):
-        pygame.init()
-        pygame.joystick.init()
+    def __init__(self, left_config, right_config, joystick_num, reset_button):
         
-        if pygame.joystick.get_count() < 1:
-            raise RuntimeError("未检测到游戏手柄")
+        #For testing, no need as a library
+        # pygame.init()
+        # pygame.joystick.init()
         
+        # if pygame.joystick.get_count() < 1:
+        #     raise RuntimeError("未检测到游戏手柄")
+
         self.joystick_num = joystick_num
         self.joystick = pygame.joystick.Joystick(self.joystick_num)
         self.joystick.init()
+        self.reset_button = reset_button
         
         self.left_arm = RoboticArm(left_config)
         self.right_arm = RoboticArm(right_config)
-        self.last_update = time.time()
 
     def update(self):
         # 处理游戏手柄事件
-        pygame.event.pump()
+        #pygame.event.pump()
         
         # 更新左臂状态
         self.left_arm.update(self.joystick)
@@ -253,7 +289,14 @@ class DualArmSystem:
         # 更新右臂状态
         self.right_arm.update(self.joystick)
 
+
+
     def get_status(self):
+        if self.joystick.get_button(self.reset_button[0]) and self.joystick.get_button(self.reset_button[1]):
+            return{
+            'left': self.left_arm.reset(),
+            'right': self.right_arm.reset()
+        }
         return {
             'left': self.left_arm.get_pwm(),
             'right': self.right_arm.get_pwm()
@@ -410,7 +453,7 @@ if __name__ == "__main__":
   夹爪：{status['left']['manipulator']}μs (初始：900μs)
 
 右臂状态：
-  手臂：{status['right']['arm']}μs (初始：2380μs)
+  手臂：{status['right']['arm']}μs (初始：908μs)
   旋转：{status['right']['rotate']}μs (初始：1500μs)
   手腕：{status['right']['wrist']}μs (初始：1590±0μs)
   夹爪：{status['right']['manipulator']}μs (初始：1620μs)
