@@ -350,9 +350,11 @@ def draw_artificial_horizon(roll, pitch, yaw):
     return surface
 
 
-def main(roll, pitch, yaw, joy):
+def main(roll, pitch, yaw, joy_num):
 
     window.fill(SKY)
+    joy = pygame.joystick.Joystick(joy_num)
+    joy.init()
 
     joyX = -round(joy.get_axis(0), 3)
     joyY = round(joy.get_axis(1), 3)

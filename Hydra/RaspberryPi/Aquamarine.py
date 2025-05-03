@@ -106,7 +106,7 @@ if __name__ == '__main__':
                 print("invaild packet")
             """
 
-            GUI.main(roll, pitch, yaw, joy)
+            GUI.main(roll, pitch, yaw, 0)
 
             #print("No respond")
             # print("Error occured")
