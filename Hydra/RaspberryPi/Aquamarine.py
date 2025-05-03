@@ -4,149 +4,8 @@ import pygame
 import math
 import Manipulator_Library as mani
 import Aquamarine_GUI as gui
-
-
-def map_value(value, old_min, old_max, new_min, new_max):
-    # Calculate the mapped value
-    mapped_value = new_min + ((value - old_min) / (old_max - old_min)) * (new_max - new_min)
-    return mapped_value
-
-
-def apply_deadzone(input_value, deadzonemax, deadzonemin):
-    if -deadzonemin <= input_value <= deadzonemax:
-        # Inside the deadzone
-        return 0.000
-    elif input_value > deadzonemax:
-        # Above the deadzone, scale to 0~1
-        return (input_value - deadzonemax) / (1.000 - deadzonemax)
-    elif input_value < -deadzonemin:
-        # Below the deadzone, scale to 0~-1
-        return (input_value + deadzonemin) / (1.000 - deadzonemin)
-
-def constrain(value, min_val,max_val):
-    return max(min_val,min(max_val, value))
-
-left_config = {
-    'is_right': False,
-    'deadzone': 0.15,
-    
-    # 手臂配置
-    #init_pwm=config['arm_init_pwm'],
-    #pwm_range=config['arm_pwm_range'],
-    #invert=config['is_right'],
-    #step=config.get('arm_step', 15.0),
-    #deadzone=config.get('deadzone', 0.1)
-    'arm_axis': 1,
-    'arm_pwm_range': (807, 2000),
-    'arm_init_pwm': 807,
-    'arm_step': 20,
-
-    # 旋转配置
-    #init_pwm=config['rotate_init_pwm'],
-    #pwm_range=config['rotate_pwm_range'],
-    #invert=config['is_right'],
-    #step=config.get('rotate_step', 15.0),
-    #deadzone=config.get('deadzone', 0.1)
-    'rotate_init_pwm': 1479,
-    'rotate_pwm_range': (1000, 2000),
-    'rotate_step': 20,
-    'rotate_axis': 0,
-    
-    # 手腕配置
-    #init_pwm=config['wrist_init_pwm'],
-    #pwm_range=config['wrist_pwm_range'],
-    #arm_controller=self.arm,
-    #arm_pwm_range=config['arm_pwm_range'],
-    #invert=config.get('is_right', False),
-    #wrist_step = config['wrist_step'],
-    #control_config=config['wrist_control']
-    'wrist_init_pwm': 985,
-    'wrist_pwm_range': (730, 1560),
-    'wrist_step': 20,
-    'wrist_control': {
-        'type': 'hat',
-        'hat_index': 0,
-        'hat_axis': 1,
-        'up': (0, 1),    # 上方向
-        'down': (0, -1), # 下方向
-    },
-
-    # 机械爪配置
-    #control_config=config['mani_control'],
-    #pwm_range=config['mani_pwm_range'],
-    #init_pwm=config['mani_init_pwm'],
-    #step=config.get('mani_step', 50),
-    #invert=config.get('is_right', False)
-    'mani_control': {
-        'type': 'hat',
-        'hat_index': 0,
-        'hat_axis': 0,
-        'open': (1, 0),   # Hat右方向为打开
-        'close': (-1, 0)  # Hat左方向为关闭
-    },
-    'mani_pwm_range': (900, 1700),
-    'mani_init_pwm': 900,
-    'mani_step': 60
-}
-
-right_config = {
-    'is_right': True,
-    'deadzone': 0.15,
-
-    # 手臂配置
-    #init_pwm=config['arm_init_pwm'],
-    #pwm_range=config['arm_pwm_range'],
-    #invert=config['is_right'],
-    #step=config.get('arm_step', 15.0),
-    #deadzone=config.get('deadzone', 0.1)
-    'arm_init_pwm': 2376,
-    'arm_pwm_range': (908, 2376),
-    'arm_step': 20,
-    'arm_axis': 4,
-    
-    # 旋转配置
-    #init_pwm=config['rotate_init_pwm'],
-    #pwm_range=config['rotate_pwm_range'],
-    #invert=config['is_right'],
-    #step=config.get('rotate_step', 15.0),
-    #deadzone=config.get('deadzone', 0.1)
-    'rotate_init_pwm': 1342,
-    'rotate_pwm_range': (2000, 913),
-    'rotate_step':20,
-    'rotate_axis': 3,
-    
-    # 手腕配置
-    #init_pwm=config['wrist_init_pwm'],
-    #pwm_range=config['wrist_pwm_range'],
-    #arm_controller=self.arm,
-    #arm_pwm_range=config['arm_pwm_range'],
-    #invert=config.get('is_right', False),
-    #wrist_step = config['wrist_step'],
-    #control_config=config['wrist_control']
-    'wrist_control': {
-        'type': 'buttons',
-        'up': 3,
-        'down': 0,
-    },
-    'wrist_init_pwm': 1540,
-    'wrist_pwm_range': (945, 1810),
-    'wrist_step': 20,
-
-    # 机械爪配置
-    #control_config=config['mani_control'],
-    #pwm_range=config['mani_pwm_range'],
-    #init_pwm=config['mani_init_pwm'],
-    #step=config.get('mani_step', 50),
-    #invert=config.get('is_right', False)
-    'mani_control': {
-        'type': 'buttons',
-        'open': 1,   # 按钮1为打开
-        'close': 2   # 按钮2为关闭
-    },
-    'mani_pwm_range': (810, 1620),
-    'mani_init_pwm': 1620,
-    'mani_step': 60
-}
+from config import *
+from utils import *
 
 
 if __name__ == '__main__':
@@ -214,13 +73,13 @@ if __name__ == '__main__':
             leftBack /= power + abs(twist)
             rightBack /= power + abs(twist)
 
-        leftFront = int(constrain(map_value(-leftFront, -1.00, 1.00, 1200, 1800),1200,1775)*4) #front two motors reversed
-        rightFront = int(constrain(map_value(-rightFront, -1.00, 1.00, 1200, 1800),1200,1775)*4)
-        leftBack = int(constrain(map_value(leftBack, -1.00, 1.00, 1200, 1800),1200,1775)*4)
-        rightBack = int(constrain(map_value(rightBack, -1.00, 1.00, 1200, 1800),1200,1775)*4)
+        leftFront = int(constrain(map_range(-leftFront, -1.00, 1.00, 1200, 1800),1200,1775)*4) #front two motors reversed
+        rightFront = int(constrain(map_range(-rightFront, -1.00, 1.00, 1200, 1800),1200,1775)*4)
+        leftBack = int(constrain(map_range(leftBack, -1.00, 1.00, 1200, 1800),1200,1775)*4)
+        rightBack = int(constrain(map_range(rightBack, -1.00, 1.00, 1200, 1800),1200,1775)*4)
 
         if joy.get_button(0) > 0:
-            vertical = int(constrain(map_value(-slider, -1.00, 1.00, 1200, 1800),1200,1775)*4)
+            vertical = int(constrain(map_range(-slider, -1.00, 1.00, 1200, 1800),1200,1775)*4)
         else:
             vertical = 6000
         

@@ -9,7 +9,8 @@ import pygame
 import time
 import math
 import numpy as np
-
+from config import *
+from utils import *
 
 # Initialize Pygame and fonts
 #pygame.init()
@@ -79,45 +80,6 @@ width = pygame.display.get_window_size()[1]
 
 print(pygame.display.get_window_size()[0], pygame.display.get_window_size()[1])
 
-
-def map_value(value, in_min, in_max, out_min, out_max):
-    """
-    Maps a value from one range to another.
-
-    value: The input value to map.
-    in_min: The lower bound of the input range.
-    in_max: The upper bound of the input range.
-    out_min: The lower bound of the output range.
-    out_max: The upper bound of the output range.
-
-    Returns:
-        The mapped value.
-    """
-    return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
-
-
-def apply_deadzone(input_value, deadzone=0.02):
-    """
-    Applies a deadzone to the input value, mapping values outside the deadzone
-    to the range [-1, 0] or [0, 1].
-
-    input_value: The input value to process (expected range: -1.00 to 1.00).
-    deadzone: The range of the deadzone (default: 0.02).
-
-    Returns:
-        The adjusted value after applying the deadzone.
-    """
-    if -deadzone <= input_value <= deadzone:
-        # Inside the deadzone
-        return 0.0
-    elif input_value > deadzone:
-        # Above the deadzone, map to the range [0, 1]
-        return map_value(input_value, deadzone, 1.00, 0.0, 1.00)
-    elif input_value < -deadzone:
-        # Below the deadzone, map to the range [0, -1]
-        return map_value(input_value, -1.00, -deadzone, -1.00, 0.0)
-
-# Function to draw the grid
 
 
 def draw_grid(markerCoord):
@@ -195,7 +157,7 @@ def draw_polar(markerCoord):
 
     # Draw marker
 
-    x = map_value(markerCoord, 0, 256, -max_radius*0.75, max_radius*0.75)
+    x = map_range(markerCoord, 0, 256, -max_radius*0.75, max_radius*0.75)
     y = int(math.sqrt(pow(max_radius*0.75, 2)-pow(x, 2)))
 
 
@@ -417,8 +379,8 @@ def main(roll, pitch, yaw, joy):
         rightBack /= power + abs(twist)
 
     
-    data = (map_value(joyX, -1, 1, 1024, 0), map_value(joyY, -
-            1, 1, 0, 1024), map_value(twist, -1, 1, 256, 0), map_value(slider, -1, 1, 0, 512))
+    data = (map_range(joyX, -1, 1, 1024, 0), map_range(joyY, -
+            1, 1, 0, 1024), map_range(twist, -1, 1, 256, 0), map_range(slider, -1, 1, 0, 512))
 
     # x = (x + 1) % size
     # window.fill(WHITE)
