@@ -75,19 +75,19 @@ if __name__ == '__main__':
             )
             
             print(
-                f"{thruster_status['leftFront']}"
-                f"{thruster_status['rightFront']}"
-                f"{thruster_status['leftBack']}"
-                f"{thruster_status['rightBack']}"
-                f"{thruster_status['vertical']}"
-                f"{mani_status['left']['rotate']}"
-                f"{mani_status['left']['arm']}"
-                f"{mani_status['left']['wrist']}"
-                f"{mani_status['left']['manipulator']}"
-                f"{mani_status['right']['rotate']}"
-                f"{mani_status['right']['arm']}"
-                f"{mani_status['right']['wrist']}"
-                f"{mani_status['right']['manipulator']}"
+                f"{thruster_status['leftFront']},"
+                f"{thruster_status['rightFront']},"
+                f"{thruster_status['leftBack']},"
+                f"{thruster_status['rightBack']},"
+                f"{thruster_status['vertical']},"
+                f"{mani_status['left']['rotate']},"
+                f"{mani_status['left']['arm']},"
+                f"{mani_status['left']['wrist']},"
+                f"{mani_status['left']['manipulator']},"
+                f"{mani_status['right']['rotate']},"
+                f"{mani_status['right']['arm']},"
+                f"{mani_status['right']['wrist']},"
+                f"{mani_status['right']['manipulator']},"
                 f"{isAutoLevel}"
             )
             
