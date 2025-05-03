@@ -216,8 +216,6 @@ void loop() {
   maestroSerial.stopListening();
 
   static float fAngle[3];
-  static bool bLevelStatus = false;
-
 
   // 读取IMU数据
   WitReadReg(AX, 12);
@@ -278,17 +276,10 @@ void loop() {
       if (isAutoLevelEnable == 1) {
         rollPID.SetMode(AUTOMATIC);
         pitchPID.SetMode(AUTOMATIC);
-        // 水平状态检测（修改为相对初始角度）
-        bool bLevelStatus = (abs(inputRoll - setpointRoll) <= LEVEL_THRESHOLD) && (abs(inputPitch - setpointPitch) <= LEVEL_THRESHOLD);
-
-        if (!bLevelStatus) {
-          // 非水平状态时计算PID
-          rollPID.Compute();
-          pitchPID.Compute();
-        }
-
-
-      } else {
+        rollPID.Compute();
+        pitchPID.Compute();
+      } 
+      else {
         rollPID.SetMode(MANUAL);
         pitchPID.SetMode(MANUAL);
         rollPID.SetTunings(Kp, Ki, Kd);
