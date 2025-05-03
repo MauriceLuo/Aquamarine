@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     print(pygame.joystick.get_count())
 
-    joy = joystick.Joystick(0)
+    joy = joystick.Joystick(0, 1)
     controller = mani.DualArmSystem(left_config, right_config, 1, [9,10])   #Manipulator initialize
     print("Joysticks initialized")
 
