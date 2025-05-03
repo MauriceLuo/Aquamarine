@@ -164,7 +164,7 @@ if __name__ == '__main__':
 
     rs485 = serial.Serial('/dev/ttyAMA0', 57600, timeout=0)
     if (rs485.isOpen() == False):
-        rs485. open()
+        rs485.open()
         rs485.flushInput()
         rs485.flushOutput()
     rs485.flush()
