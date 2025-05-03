@@ -262,7 +262,6 @@ if __name__ == '__main__':
         #print("No respond")
         # print("Error occured")
         #print(f"Decoded Values: {response}")
-        print()
         time.sleep(0.05)
 
 
