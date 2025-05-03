@@ -6,7 +6,6 @@
 
 # Import libraries
 import pygame
-import sys
 import time
 import math
 import numpy as np

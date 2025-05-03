@@ -1,10 +1,9 @@
 import serial # type: ignore
 import time
 import pygame
-import sys
 import math
-import manipulator_library_v2 as mani
-import Aquamarine2425_gui_v1_1 as gui
+import Manipulator_Library as mani
+import Aquamarine_GUI as gui
 
 
 def map_value(value, old_min, old_max, new_min, new_max):
