@@ -57,35 +57,39 @@ if __name__ == '__main__':
 
             lastButtonState = currentButtonState
             
-            rs485.write(f"{thruster_status['leftFront']}\
-                          {thruster_status['rightFront']}\
-                          {thruster_status['leftBack']}\
-                          {thruster_status['rightBack']}\
-                          {thruster_status['vertical']}\
-                          {mani_status['left']['rotate']}\
-                          {mani_status['left']['arm']}\
-                          {mani_status['left']['wrist']}\
-                          {mani_status['left']['manipulator']}\
-                          {mani_status['right']['rotate']}\
-                          {mani_status['right']['arm']}\
-                          {mani_status['right']['wrist']}\
-                          {mani_status['right']['manipulator']}\
-                          {isAutoLevel}\n".encode())
-
-            print(f"{thruster_status['leftFront']},\
-                    {thruster_status['rightFront']},\
-                    {thruster_status['leftBack']},\
-                    {thruster_status['rightBack']},\
-                    {thruster_status['vertical']},\
-                    {mani_status['left']['rotate']},\
-                    {mani_status['left']['arm']},\
-                    {mani_status['left']['wrist']},\
-                    {mani_status['left']['manipulator']},\
-                    {mani_status['right']['rotate']},\
-                    {mani_status['right']['arm']},\
-                    {mani_status['right']['wrist']},\
-                    {mani_status['right']['manipulator']},\
-                    {isAutoLevel}")
+            rs485.write(
+                f"{thruster_status['leftFront']}"
+                f"{thruster_status['rightFront']}"
+                f"{thruster_status['leftBack']}"
+                f"{thruster_status['rightBack']}"
+                f"{thruster_status['vertical']}"
+                f"{mani_status['left']['rotate']}"
+                f"{mani_status['left']['arm']}"
+                f"{mani_status['left']['wrist']}"
+                f"{mani_status['left']['manipulator']}"
+                f"{mani_status['right']['rotate']}"
+                f"{mani_status['right']['arm']}"
+                f"{mani_status['right']['wrist']}"
+                f"{mani_status['right']['manipulator']}"
+                f"{isAutoLevel}\n".encode()
+            )
+            
+            print(
+                f"{thruster_status['leftFront']}"
+                f"{thruster_status['rightFront']}"
+                f"{thruster_status['leftBack']}"
+                f"{thruster_status['rightBack']}"
+                f"{thruster_status['vertical']}"
+                f"{mani_status['left']['rotate']}"
+                f"{mani_status['left']['arm']}"
+                f"{mani_status['left']['wrist']}"
+                f"{mani_status['left']['manipulator']}"
+                f"{mani_status['right']['rotate']}"
+                f"{mani_status['right']['arm']}"
+                f"{mani_status['right']['wrist']}"
+                f"{mani_status['right']['manipulator']}"
+                f"{isAutoLevel}"
+            )
             
             """
             #while rs485.in_waiting <= 0:
