@@ -350,7 +350,7 @@ def main(roll, pitch, yaw, joy):
 
     joyX = -round(joy.get_axis(0), 3)
     joyY = round(joy.get_axis(1), 3)
-    twist = apply_deadzone(-round(joy.get_axis(2), 3), 0.35)
+    twist = apply_deadzone(-round(joy.get_axis(2), 3), 0.35, 0.35)
     slider = round(joy.get_axis(3), 3)
     """
     joyX = 0.5
@@ -358,10 +358,10 @@ def main(roll, pitch, yaw, joy):
     twist = 0
     slider = 0
     """
-    theta = math.atan2(apply_deadzone(joyY, deadzoneY),
-                        apply_deadzone(joyX, deadzoneX))
-    power = math.hypot(apply_deadzone(joyX, deadzoneX),
-                        apply_deadzone(joyY, deadzoneY))
+    theta = math.atan2(apply_deadzone(joyY, deadzoneY, deadzoneY),
+                        apply_deadzone(joyX, deadzoneX, deadzoneX))
+    power = math.hypot(apply_deadzone(joyX, deadzoneX, deadzoneX),
+                        apply_deadzone(joyY, deadzoneY, deadzoneY))
 
     sin = math.sin(theta - math.pi/4)
     cos = math.cos(theta - math.pi/4)
