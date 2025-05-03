@@ -236,6 +236,7 @@ if __name__ == '__main__':
 
         print(f"{leftFront},{rightFront},{leftBack},{rightBack},{vertical},{status['left']['rotate']},{status['left']['arm']},{status['left']['wrist']},{status['left']['manipulator']},{status['right']['rotate']},{status['right']['arm']},{status['right']['wrist']},{status['right']['manipulator']},{isAutoLevel}")
         
+        """
         #while rs485.in_waiting <= 0:
         #    time.sleep(0.01)
         response = ""
@@ -252,7 +253,7 @@ if __name__ == '__main__':
                 yaw = receivedOutput[2]
         except:
             print("invaild packet")
-
+        """
 
         gui.main(roll, pitch, yaw, joy)
         
