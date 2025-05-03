@@ -209,15 +209,12 @@ void setup() {
 }
 
 
-
-
 void loop() {
 
   maestroSerial.stopListening();
 
   static float fAngle[3];
-  static bool bLevelStatus = false;
-
+  int Thruster[8];
 
   // 读取IMU数据
   WitReadReg(AX, 12);
@@ -278,17 +275,10 @@ void loop() {
       if (isAutoLevelEnable == 1) {
         rollPID.SetMode(AUTOMATIC);
         pitchPID.SetMode(AUTOMATIC);
-        // 水平状态检测（修改为相对初始角度）
-        bool bLevelStatus = (abs(inputRoll - setpointRoll) <= LEVEL_THRESHOLD) && (abs(inputPitch - setpointPitch) <= LEVEL_THRESHOLD);
-
-        if (!bLevelStatus) {
-          // 非水平状态时计算PID
-          rollPID.Compute();
-          pitchPID.Compute();
-        }
-
-
-      } else {
+        rollPID.Compute();
+        pitchPID.Compute();
+      } 
+      else {
         rollPID.SetMode(MANUAL);
         pitchPID.SetMode(MANUAL);
         rollPID.SetTunings(Kp, Ki, Kd);
@@ -305,29 +295,48 @@ void loop() {
       pid_val[1] = map(-outputPitch + outputRoll, -100, 100, -1200, 1100);
       pid_val[2] = map(-outputPitch - outputRoll, -100, 100, -1200, 1100);
       pid_val[3] = map(outputPitch - outputRoll, -100, 100, -1200, 1100);
-
+/*
       int Thruster1 = constrain(PWM[4] + pid_val[0], vertThrustMin, vertThrustMax);
       int Thruster4 = constrain(PWM[4] + pid_val[1], vertThrustMin, vertThrustMax);
       int Thruster3 = constrain(PWM[4] + pid_val[2], vertThrustMin, vertThrustMax);
       int Thruster2 = constrain(PWM[4] + pid_val[3], vertThrustMin, vertThrustMax);
+*/
+      for (int i = 0; i < 4; i++){
+        Thruster[i] = PWM[i];
+        Thruster[i+4] = PWM[4] + pid_val[i];
+      }
 
-      maestro.setTarget(5, PWM[0]);
-      maestro.setTarget(1, PWM[1]);
-      maestro.setTarget(6, PWM[2]);
-      maestro.setTarget(2, PWM[3]);
+      for (int i = 0;i < 8; i++){
+        Thruster[i] = constrain(Thruster[i], vertThrustMin, vertThrustMax);
+      }
+      
+      int magic_thruster_index[8] = {5, 1, 6, 2, 0, 3, 7, 4};
 
-      maestro.setTarget(0, Thruster1);
-      maestro.setTarget(3, Thruster4);
-      maestro.setTarget(4, Thruster2);
-      maestro.setTarget(7, Thruster3);
+      for ( int i = 0; i < 8; i++ ){
+        maestro.setTarget(magic_thruster_index[i], Thruster[i]);
+      }
+/*
+      maestro.setTarget(5, Thruster[0]);
+      maestro.setTarget(1, Thruster[1]);
+      maestro.setTarget(6, Thruster[2]);
+      maestro.setTarget(2, Thruster[3]);
 
-      rs485Serial.print(Thruster1);
+      maestro.setTarget(0, Thruster[4]);  //pid_val[0]
+      maestro.setTarget(3, Thruster[5]);  //pid_val[1]
+      maestro.setTarget(7, Thruster[6]);  //pid_val[2]
+      maestro.setTarget(4, Thruster[7]);  //pid_val[3]
+*/
+      for (int i = 5; i < 13; i++) {
+        maestro.setTarget((i + 3), PWM[i]);
+      }
+
+      rs485Serial.print(Thruster[4]);
       rs485Serial.print(",");
-      rs485Serial.print(Thruster4);
+      rs485Serial.print(Thruster[5]);
       rs485Serial.print(",");
-      rs485Serial.print(Thruster2);
+      rs485Serial.print(Thruster[7]);
       rs485Serial.print(",");
-      rs485Serial.print(Thruster3);
+      rs485Serial.print(Thruster[6]);
       rs485Serial.print(",");
       rs485Serial.print(isAutoLevelEnable);
       rs485Serial.print(",");
@@ -339,10 +348,6 @@ void loop() {
       rs485Serial.print(",");
       rs485Serial.print(setpointPitch);
       rs485Serial.println();
-
-      for (int i = 5; i < 13; i++) {
-        maestro.setTarget((i + 3), PWM[i]);
-      }
     }
 
     delay(tick);
