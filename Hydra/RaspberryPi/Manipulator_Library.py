@@ -2,27 +2,8 @@ import pygame
 import time
 import numpy as np
 import subprocess
-
-def map_range(x, in_min, in_max, out_min, out_max):
-    """Maps a value from one range to another."""
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
-
-def deadzoneNormalise(input_value, minimum, maximum):
-    """
-    Applies a deadzone to the input value. Values between `minimum` and `maximum` are set to 0.
-    Values below `minimum` are mapped from [-1.0, minimum] to [-1.0, 0].
-    Values above `maximum` are mapped from [maximum, 1.0] to [0, 1.0].
-    """
-    if minimum < -1.0 or maximum > 1.0 or minimum >= maximum:
-        raise ValueError("Invalid minimum or maximum range")
-    
-    if minimum <= input_value <= maximum:
-        return 0.0
-    elif input_value < minimum:
-        return float(map_range(input_value, -1.0, minimum, -1.0, 0.0))
-    else:  # input_value > maximum
-        return float(map_range(input_value, maximum, 1.0, 0.0, 1.0))
-    
+from config import *
+from utils import *
     
 class RotateControl:
     def __init__(self, init_pwm, pwm_range, invert, step, deadzone):
@@ -35,7 +16,7 @@ class RotateControl:
         self.__current_pwm = init_pwm
         
     def update(self, axis_value):
-        self.axis_value = deadzoneNormalise(axis_value, -self.deadzone, self.deadzone)
+        self.axis_value = deadzone_normalise(axis_value, -self.deadzone, self.deadzone)
         
         """
         if not self.invert:
@@ -69,7 +50,7 @@ class ArmControl:
         self.__current_pwm = init_pwm
     
     def update(self, axis_value):
-        self.axis_value = deadzoneNormalise(axis_value, -self.deadzone, self.deadzone)
+        self.axis_value = deadzone_normalise(axis_value, -self.deadzone, self.deadzone)
         
         if not self.invert:
             delta_pwm = self.axis_value * self.step
@@ -302,130 +283,6 @@ class DualArmSystem:
             'right': self.right_arm.get_pwm()
         }
         
-
-
-left_config = {
-    'is_right': False,
-    'deadzone': 0.15,
-    
-    # 手臂配置
-    #init_pwm=config['arm_init_pwm'],
-    #pwm_range=config['arm_pwm_range'],
-    #invert=config['is_right'],
-    #step=config.get('arm_step', 15.0),
-    #deadzone=config.get('deadzone', 0.1)
-    'arm_axis': 1,
-    'arm_pwm_range': (784, 2000),
-    'arm_init_pwm': 784,
-    'arm_step': 20,
-
-    # 旋转配置
-    #init_pwm=config['rotate_init_pwm'],
-    #pwm_range=config['rotate_pwm_range'],
-    #invert=config['is_right'],
-    #step=config.get('rotate_step', 15.0),
-    #deadzone=config.get('deadzone', 0.1)
-    'rotate_init_pwm': 1500,
-    'rotate_pwm_range': (1000, 2000),
-    'rotate_step': 20,
-    'rotate_axis': 0,
-    
-    # 手腕配置
-    #init_pwm=config['wrist_init_pwm'],
-    #pwm_range=config['wrist_pwm_range'],
-    #arm_controller=self.arm,
-    #arm_pwm_range=config['arm_pwm_range'],
-    #invert=config.get('is_right', False),
-    #wrist_step = config['wrist_step'],
-    #control_config=config['wrist_control']
-    'wrist_init_pwm': 985,
-    'wrist_pwm_range': (730, 1560),
-    'wrist_step': 20,
-    'wrist_control': {
-        'type': 'hat',
-        'hat_index': 0,
-        'hat_axis': 1,
-        'up': (0, 1),    # 上方向
-        'down': (0, -1), # 下方向
-    },
-
-    # 机械爪配置
-    #control_config=config['mani_control'],
-    #pwm_range=config['mani_pwm_range'],
-    #init_pwm=config['mani_init_pwm'],
-    #step=config.get('mani_step', 50),
-    #invert=config.get('is_right', False)
-    'mani_control': {
-        'type': 'hat',
-        'hat_index': 0,
-        'hat_axis': 0,
-        'open': (1, 0),   # Hat右方向为打开
-        'close': (-1, 0)  # Hat左方向为关闭
-    },
-    'mani_pwm_range': (900, 1650),
-    'mani_init_pwm': 900,
-    'mani_step': 60
-}
-
-right_config = {
-    'is_right': True,
-    'deadzone': 0.15,
-
-    # 手臂配置
-    #init_pwm=config['arm_init_pwm'],
-    #pwm_range=config['arm_pwm_range'],
-    #invert=config['is_right'],
-    #step=config.get('arm_step', 15.0),
-    #deadzone=config.get('deadzone', 0.1)
-    'arm_init_pwm': 2380,
-    'arm_pwm_range': (908, 2380),
-    'arm_step': 20,
-    'arm_axis': 3,
-    
-    # 旋转配置
-    #init_pwm=config['rotate_init_pwm'],
-    #pwm_range=config['rotate_pwm_range'],
-    #invert=config['is_right'],
-    #step=config.get('rotate_step', 15.0),
-    #deadzone=config.get('deadzone', 0.1)
-    'rotate_init_pwm': 1500,
-    'rotate_pwm_range': (2000, 1000),
-    'rotate_step':20,
-    'rotate_axis': 2,
-    
-    # 手腕配置
-    #init_pwm=config['wrist_init_pwm'],
-    #pwm_range=config['wrist_pwm_range'],
-    #arm_controller=self.arm,
-    #arm_pwm_range=config['arm_pwm_range'],
-    #invert=config.get('is_right', False),
-    #wrist_step = config['wrist_step'],
-    #control_config=config['wrist_control']
-    'wrist_control': {
-        'type': 'buttons',
-        'up': 3,
-        'down': 0,
-    },
-    'wrist_init_pwm': 1590,
-    'wrist_pwm_range': (1010, 1930),
-    'wrist_step': 20,
-
-    # 机械爪配置
-    #control_config=config['mani_control'],
-    #pwm_range=config['mani_pwm_range'],
-    #init_pwm=config['mani_init_pwm'],
-    #step=config.get('mani_step', 50),
-    #invert=config.get('is_right', False)
-    'mani_control': {
-        'type': 'buttons',
-        'open': 1,   # 按钮1为打开
-        'close': 2   # 按钮2为关闭
-    },
-    'mani_pwm_range': (810, 1620),
-    'mani_init_pwm': 1620,
-    'mani_step': 60
-}
-
 
 def clear() -> None:
     command = ['cmd']
