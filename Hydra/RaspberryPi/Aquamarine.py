@@ -62,12 +62,14 @@ if __name__ == '__main__':
         cos = math.cos(theta - math.pi/4)
         maximum = max(abs(sin), abs(cos))
 
+        assert(maximum != 0)
         leftFront = power * (cos/maximum) + twist
         rightFront = power * (sin/maximum) - twist
         leftBack = power * (sin/maximum) + twist
         rightBack = power * (cos/maximum) - twist
 
         if power + abs(twist) > 1:
+            assert((power + abs(twist)) != 0)
             leftFront /= power + abs(twist)
             rightFront /= power + abs(twist)
             leftBack /= power + abs(twist)

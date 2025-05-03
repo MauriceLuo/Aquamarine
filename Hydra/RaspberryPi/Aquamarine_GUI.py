@@ -90,9 +90,12 @@ def draw_grid(markerCoord):
 
     mult = graphSize/1024
 
+    assert((1-deadzoneX) != 0)
+    assert((1+deadzoneX) != 0)
+    
     horMin = graphSize//2 * (1-deadzoneX)
     horMax = graphSize//2 * (1+deadzoneX)
-
+    
     verMin = graphSize//2 * (1-deadzoneY)
     verMax = graphSize//2 * (1+deadzoneY)
 
@@ -143,6 +146,7 @@ def draw_polar(markerCoord):
     pygame.draw.circle(polarSurface, LGREY, centre, max_radius, 2)
 
     sub_arc_num = 4
+    assert(sub_arc_num != 0)
     for radius in range(0, int(max_radius), int(max_radius/sub_arc_num)):
         pygame.draw.circle(polarSurface, LGREY, centre, radius, 1)
 
@@ -151,6 +155,8 @@ def draw_polar(markerCoord):
 
     for deg in range(0, 181, 30):
 
+        assert(2+max_radius*math.cos(math.radians(deg)) != 0)
+        assert(2-max_radius*math.cos(math.radians(deg)) != 0)
         x = math.floor(polarSize // 2+max_radius*math.cos(math.radians(deg)))
         y = math.ceil(polarSize // 2-max_radius*math.sin(math.radians(deg)))
         pygame.draw.line(polarSurface, LGREY, centre, (x, y), 1)
@@ -367,12 +373,14 @@ def main(roll, pitch, yaw, joy):
     cos = math.cos(theta - math.pi/4)
     maximum = max(abs(sin), abs(cos))
 
+    assert(maximum != 0)
     leftFront = power * (cos/maximum) + twist
     rightFront = power * (sin/maximum) - twist
     leftBack = power * (sin/maximum) + twist
     rightBack = power * (cos/maximum) - twist
 
     if power + abs(twist) > 1:
+        assert(power + abs(twist) != 0)
         leftFront /= power + abs(twist)
         rightFront /= power + abs(twist)
         leftBack /= power + abs(twist)
