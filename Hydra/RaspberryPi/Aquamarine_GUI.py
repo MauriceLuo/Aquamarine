@@ -75,8 +75,7 @@ time.sleep(2)
 length = pygame.display.get_window_size()[0]
 width = pygame.display.get_window_size()[1]
 
-bg = pygame.transform.scale(pygame.image.load(
-    "rovbg.jpeg"), (length, width))
+
 
 print(pygame.display.get_window_size()[0], pygame.display.get_window_size()[1])
 
