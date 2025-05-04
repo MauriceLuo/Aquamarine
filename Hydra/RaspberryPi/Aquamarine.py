@@ -1,7 +1,6 @@
-import serial # type: ignore
+import serial  # type: ignore
 import time
 import pygame
-import math
 import Manipulator_Library as mani
 import GUI
 import joystick
@@ -10,14 +9,20 @@ from utils import *
 
 
 if __name__ == '__main__':
-        
+
     pygame.init()
     pygame.joystick.init()
 
     print(pygame.joystick.get_count())
 
     joy = joystick.Joystick(0, 1)
-    controller = mani.DualArmSystem(left_config, right_config, 1, [9,10])   #Manipulator initialize
+    controller = mani.DualArmSystem(    # Manipulator initialize
+        left_config,
+        right_config,
+        1,
+        [9, 10]
+    )
+
     print("Joysticks initialized")
 
     rs485 = serial.Serial('/dev/ttyAMA0', 57600, timeout=0)
@@ -26,7 +31,7 @@ if __name__ == '__main__':
         rs485.flushInput()
         rs485.flushOutput()
     rs485.flush()
-    
+
     # the Arduino is designed to reset everytime a serial connection is made over the USB interface, we must give it time to reboot.
     time.sleep(2)
 
@@ -36,7 +41,7 @@ if __name__ == '__main__':
 
     lastButtonState = 0
     isAutoLevel = 0
-    
+
     dt = 0.05
     last_time = time.time()
     while True:
@@ -45,18 +50,18 @@ if __name__ == '__main__':
             pygame.event.get()  # gets values from the joystick
             # ser.write("R+\n".encode())  # sends in binary
 
-            controller.update()                 #Update Manipulator PWM
-            mani_status = controller.get_status()    #Get Manipulator PWM
+            controller.update()  # Update Manipulator PWM
+            mani_status = controller.get_status()  # Get Manipulator PWM
 
             joy.update()
             thruster_status = joy.get_status()
-            
+
             currentButtonState = thruster_status["pidButton"]
             if lastButtonState == 0 and currentButtonState == 1:
                 isAutoLevel = 1 - isAutoLevel
 
             lastButtonState = currentButtonState
-            
+
             rs485.write(
                 f"{thruster_status['leftFront']}"
                 f"{thruster_status['rightFront']}"
@@ -73,7 +78,7 @@ if __name__ == '__main__':
                 f"{mani_status['right']['manipulator']}"
                 f"{isAutoLevel}\n".encode()
             )
-            
+
             print(
                 f"{thruster_status['leftFront']},"
                 f"{thruster_status['rightFront']},"
@@ -90,7 +95,7 @@ if __name__ == '__main__':
                 f"{mani_status['right']['manipulator']},"
                 f"{isAutoLevel}"
             )
-            
+
             """
             #while rs485.in_waiting <= 0:
             #    time.sleep(0.01)
@@ -112,11 +117,9 @@ if __name__ == '__main__':
 
             GUI.main(roll, pitch, yaw, 0)
 
-            #print("No respond")
+            # print("No respond")
             # print("Error occured")
-            #print(f"Decoded Values: {response}")
-            #time.sleep(0.05)
+            # print(f"Decoded Values: {response}")
+            # time.sleep(0.05)
         else:
             time.sleep(0.005)
-
-

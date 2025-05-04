@@ -13,7 +13,7 @@ from config import *
 from utils import *
 
 # Initialize Pygame and fonts
-#pygame.init()
+# pygame.init()
 pygame.font.init()
 pygame.display.set_caption("This took half a day's worth of life away from me")
 clock = pygame.time.Clock()
@@ -21,7 +21,6 @@ font = pygame.font.SysFont(None, 24)
 my_font = pygame.font.SysFont("Comic Sans MS", 30)
 
 window = pygame.display.set_mode((0, 0), flags=pygame.RESIZABLE, depth=24)
-
 
 
 # Init thruster png
@@ -57,7 +56,6 @@ deadzoneX = 0.25
 deadzoneY = 0.25
 
 
-
 # -----------------PyGame inilisation complete-----------------#
 
 
@@ -77,9 +75,7 @@ length = pygame.display.get_window_size()[0]
 width = pygame.display.get_window_size()[1]
 
 
-
 print(pygame.display.get_window_size()[0], pygame.display.get_window_size()[1])
-
 
 
 def draw_grid(markerCoord):
@@ -90,12 +86,12 @@ def draw_grid(markerCoord):
 
     mult = graphSize/1024
 
-    assert((1-deadzoneX) != 0)
-    assert((1+deadzoneX) != 0)
-    
+    assert ((1-deadzoneX) != 0)
+    assert ((1+deadzoneX) != 0)
+
     horMin = graphSize//2 * (1-deadzoneX)
     horMax = graphSize//2 * (1+deadzoneX)
-    
+
     verMin = graphSize//2 * (1-deadzoneY)
     verMax = graphSize//2 * (1+deadzoneY)
 
@@ -146,7 +142,7 @@ def draw_polar(markerCoord):
     pygame.draw.circle(polarSurface, LGREY, centre, max_radius, 2)
 
     sub_arc_num = 4
-    assert(sub_arc_num != 0)
+    assert (sub_arc_num != 0)
     for radius in range(0, int(max_radius), int(max_radius/sub_arc_num)):
         pygame.draw.circle(polarSurface, LGREY, centre, radius, 1)
 
@@ -155,8 +151,8 @@ def draw_polar(markerCoord):
 
     for deg in range(0, 181, 30):
 
-        assert(2+max_radius*math.cos(math.radians(deg)) != 0)
-        assert(2-max_radius*math.cos(math.radians(deg)) != 0)
+        assert (2+max_radius*math.cos(math.radians(deg)) != 0)
+        assert (2-max_radius*math.cos(math.radians(deg)) != 0)
         x = math.floor(polarSize // 2+max_radius*math.cos(math.radians(deg)))
         y = math.ceil(polarSize // 2-max_radius*math.sin(math.radians(deg)))
         pygame.draw.line(polarSurface, LGREY, centre, (x, y), 1)
@@ -166,7 +162,6 @@ def draw_polar(markerCoord):
     x = map_range(markerCoord, 0, 256, -max_radius*0.75, max_radius*0.75)
     y = int(math.sqrt(pow(max_radius*0.75, 2)-pow(x, 2)))
 
-
     pygame.draw.circle(polarSurface, RED, (x+max_radius, max_radius-y), 5)
 
     window.blit(polarSurface, (length - 484, 100))
@@ -174,22 +169,22 @@ def draw_polar(markerCoord):
 
 def draw_slider(markerCoord):
 
-    sliderLength = 64 #height
-    sliderHeight = 512 # wiudth
+    sliderLength = 64  # height
+    sliderHeight = 512  # wiudth
 
     sliderSurface = pygame.Surface((sliderLength, sliderHeight))
     sliderSurface.fill(WHITE)
 
-    centre = (sliderLength // 2, sliderHeight //2)
+    centre = (sliderLength // 2, sliderHeight // 2)
 
-    pygame.draw.rect(sliderSurface, BLACK, (0,0,sliderLength, sliderHeight), 3, 2)
+    pygame.draw.rect(sliderSurface, BLACK,
+                     (0, 0, sliderLength, sliderHeight), 3, 2)
 
     x = centre[0]
     y = int(markerCoord)
     pygame.draw.circle(sliderSurface, RED, (x, y), 5)
 
     window.blit(sliderSurface, (length - 700, 100))
-
 
 
 def getMarkerCoord(type, data):
@@ -206,13 +201,6 @@ def getMarkerCoord(type, data):
         return (float(data[3]))
 
 
-
-
-
-
-
-
-                
 def drawROV(X, Y, data):
     # X and Y are values denoting the coordinates of the ROV
     # size should be a value denoting the size of the ROV
@@ -282,9 +270,6 @@ def drawROV(X, Y, data):
 
             window.blit(rov, (X, Y))
             i = i + 1
-
-
-
 
 
 def wrap_angle(angle):
@@ -367,28 +352,27 @@ def main(roll, pitch, yaw, joy_num):
     slider = 0
     """
     theta = math.atan2(apply_deadzone(joyY, deadzoneY, deadzoneY),
-                        apply_deadzone(joyX, deadzoneX, deadzoneX))
+                       apply_deadzone(joyX, deadzoneX, deadzoneX))
     power = math.hypot(apply_deadzone(joyX, deadzoneX, deadzoneX),
-                        apply_deadzone(joyY, deadzoneY, deadzoneY))
+                       apply_deadzone(joyY, deadzoneY, deadzoneY))
 
     sin = math.sin(theta - math.pi/4)
     cos = math.cos(theta - math.pi/4)
     maximum = max(abs(sin), abs(cos))
 
-    assert(maximum != 0)
+    assert (maximum != 0)
     leftFront = power * (cos/maximum) + twist
     rightFront = power * (sin/maximum) - twist
     leftBack = power * (sin/maximum) + twist
     rightBack = power * (cos/maximum) - twist
 
     if power + abs(twist) > 1:
-        assert(power + abs(twist) != 0)
+        assert (power + abs(twist) != 0)
         leftFront /= power + abs(twist)
         rightFront /= power + abs(twist)
         leftBack /= power + abs(twist)
         rightBack /= power + abs(twist)
 
-    
     data = (map_range(joyX, -1, 1, 1024, 0), map_range(joyY, -
             1, 1, 0, 1024), map_range(twist, -1, 1, 256, 0), map_range(slider, -1, 1, 0, 512))
 
@@ -403,10 +387,9 @@ def main(roll, pitch, yaw, joy_num):
 
     # data = (dataList[0], dataList[1], dataList[2])
 
-    
     draw_polar(getMarkerCoord('polar', data))
     draw_grid(getMarkerCoord('grid', data))
-    draw_slider(getMarkerCoord('slider',data))
+    draw_slider(getMarkerCoord('slider', data))
 
     roll = np.clip(roll, -180, 180)
     pitch = np.clip(pitch, -180, 180)
@@ -420,11 +403,10 @@ def main(roll, pitch, yaw, joy_num):
     clock.tick(30)
 
 
-
 if __name__ == "__main__":
     pygame.init()
     pygame.joystick.init()
 
     joy = pygame.joystick.Joystick(0)
     joy.init()
-    main(0,0,0,joy)
+    main(0, 0, 0, joy)
