@@ -1,11 +1,26 @@
-# Aquamarine
+# Aquamarine ROV Control System
 
-Code of Aquamarine Hydra
+![ROV Visualization Demo](https://via.placeholder.com/800x400.png?text=ROV+GUI+and+Hardware)  
+*(Replace with actual screenshots of the GUI and hardware setup)*
 
-## Latest Version of Aquamarine Hydra
+A comprehensive control system for underwater Remotely Operated Vehicles (ROVs), combining Python-based GUI control, Arduino firmware for motor/sensor management, and advanced stabilization algorithms.
 
-[RespberryPi](./Hydra/RaspberryPi/Aquamarine.py 'Latest version on RespberryPi')
+## Features
+- **Dual Robotic Arm Control**: PWM-driven manipulators with wrist/gripper control (left & right arm configurations).
+- **Joystick Integration**: Xbox/PS4 controller support for thrusters and manipulators.
+- **Real-time 3D Visualization**: Pygame-based GUI showing ROV orientation (roll/pitch/yaw), thruster output, and sensor data.
+- **PID Stabilization**: Auto-leveling mode with dynamic calibration using IMU data.
+- **Multi-protocol Communication**: RS485 serial for PWM signals, I2C for IMU (Wit Motion Sensor).
+- **Modular Design**: Separate libraries for manipulators (`Manipulator_Library.py`), joystick handling, and GUI components.
 
-[Arduino](./Hydra/Arduino/Aquamarine_Arduino/Aquamarine_Arduino.ino 'latest version on Arduino')
+## Hardware Requirements
+- **Microcontroller**: Arduino Mega 2560 (running `Aquamarine_Arduino.ino`).
+- **Motor Controller**: Pololu Maestro for PWM signal management.
+- **IMU**: Wit Motion 10-axis sensor (integrated via I2C).
+- **Thrusters**: 8x bidirectional thrusters (horizontal + vertical control).
+- **Joystick**: XInput-compatible controller.
 
-[Manipulator](./Manipulator/Manipulator_Library.py 'Manipulator Library')
+## Software Dependencies
+- **Python 3.8+** with packages:
+  ```bash
+  pip install pygame pyserial numpy
