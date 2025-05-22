@@ -7,7 +7,7 @@ from utils import *
 
 
 class RotateControl:
-    def __init__(self, init_pwm, pwm_range, invert, step, deadzone):
+    def __init__(self, init_pwm, pwm_range, invert, step, deadzone) -> None:
         self.pwm_max = max(pwm_range)
         self.pwm_min = min(pwm_range)
         self.init_pwm = init_pwm
@@ -16,7 +16,7 @@ class RotateControl:
         self.deadzone = deadzone
         self.__current_pwm = init_pwm
 
-    def update(self, axis_value):
+    def update(self, axis_value) -> None:
         self.axis_value = deadzone_normalise(
             axis_value, -self.deadzone, self.deadzone)
 
@@ -33,16 +33,16 @@ class RotateControl:
             self.pwm_max
         )
 
-    def reset(self):
+    def reset(self) -> int:
         self.__current_pwm = self.init_pwm
         return int(self.__current_pwm)
 
-    def pwm(self):
+    def pwm(self) -> int:
         return int(self.__current_pwm)
 
 
 class ArmControl:
-    def __init__(self, init_pwm, pwm_range, invert, step, deadzone):
+    def __init__(self, init_pwm, pwm_range, invert, step, deadzone) -> None:
         self.pwm_max = max(pwm_range)
         self.pwm_min = min(pwm_range)
         self.invert = invert
@@ -51,7 +51,7 @@ class ArmControl:
         self.init_pwm = init_pwm
         self.__current_pwm = init_pwm
 
-    def update(self, axis_value):
+    def update(self, axis_value) -> None:
         self.axis_value = deadzone_normalise(
             axis_value, -self.deadzone, self.deadzone)
 
@@ -66,16 +66,16 @@ class ArmControl:
             self.pwm_max
         )
 
-    def reset(self):
+    def reset(self) -> int:
         self.__current_pwm = self.init_pwm
         return int(self.__current_pwm)
 
-    def pwm(self):
+    def pwm(self) -> int:
         return int(self.__current_pwm)
 
 
 class WristControl:
-    def __init__(self, init_pwm, pwm_range, arm_controller, arm_pwm_range, arm_current_pwm, invert, step, control_config):
+    def __init__(self, init_pwm, pwm_range, arm_controller, arm_pwm_range, arm_current_pwm, invert, step, control_config) -> None:
         self.init_pwm = init_pwm
         self.__current_pwm = init_pwm
         self.pwm_max = max(pwm_range)
@@ -89,7 +89,7 @@ class WristControl:
         self.offset = 0
         self.control_config = control_config
 
-    def update(self, joystick):
+    def update(self, joystick) -> None:
         if self.control_config['type'] == 'buttons':
             up, down = 0, 0
             up = joystick.get_button(self.control_config['up'])
@@ -122,17 +122,17 @@ class WristControl:
             self.pwm_max
         )
 
-    def reset(self):
+    def reset(self) -> int:
         self.offset = 0
         self.__current_pwm = self.init_pwm
         return int(self.__current_pwm)
 
-    def pwm(self):
+    def pwm(self) -> int:
         return int(self.__current_pwm)
 
 
 class ManipulatorControl:
-    def __init__(self, control_config, pwm_range, init_pwm, step, invert):
+    def __init__(self, control_config, pwm_range, init_pwm, step, invert) -> None:
         self.control_config = control_config
         self.pwm_max = max(pwm_range)
         self.pwm_min = min(pwm_range)
@@ -141,7 +141,7 @@ class ManipulatorControl:
         self.__current_pwm = init_pwm
         self.invert = invert
 
-    def update(self, joystick):
+    def update(self, joystick) -> None:
         if self.control_config['type'] == 'buttons':
             delta = joystick.get_button(
                 self.control_config['open']) - joystick.get_button(self.control_config['close'])
@@ -162,16 +162,16 @@ class ManipulatorControl:
                 self.pwm_max
             )
 
-    def reset(self):
+    def reset(self) -> int:
         self.__current_pwm = self.init_pwm
         return int(self.__current_pwm)
 
-    def pwm(self):
+    def pwm(self) -> int:
         return int(self.__current_pwm)
 
 
 class RoboticArm:
-    def __init__(self, config):
+    def __init__(self, config) -> None:
         # 手臂
         self.arm = ArmControl(
             init_pwm=config['arm_init_pwm'],
@@ -217,7 +217,7 @@ class RoboticArm:
             'rotate': config['rotate_axis']
         }
 
-    def update(self, joystick):
+    def update(self, joystick) -> None:
         # 更新手臂
         self.arm.update(joystick.get_axis(self.axis_mapping['arm']))
 
@@ -230,7 +230,7 @@ class RoboticArm:
         # 更新mani
         self.manipulator.update(joystick)
 
-    def get_pwm(self):
+    def get_pwm(self) -> dict:
         return {
             'arm': self.arm.pwm() * 4,
             'rotate': self.rotate.pwm() * 4,
@@ -238,7 +238,7 @@ class RoboticArm:
             'manipulator': self.manipulator.pwm() * 4
         }
 
-    def reset(self):
+    def reset(self) -> dict:
         return {
             'arm': self.arm.reset() * 4,
             'rotate': self.rotate.reset() * 4,
@@ -248,7 +248,7 @@ class RoboticArm:
 
 
 class DualArmSystem:
-    def __init__(self, left_config, right_config, joystick_num, reset_button):
+    def __init__(self, left_config, right_config, joystick_num, reset_button) -> None:
 
         # For testing, no need as a library
         # pygame.init()
@@ -265,7 +265,7 @@ class DualArmSystem:
         self.left_arm = RoboticArm(left_config)
         self.right_arm = RoboticArm(right_config)
 
-    def update(self):
+    def update(self) -> None:
         # 处理游戏手柄事件
         # pygame.event.pump()
 
@@ -275,7 +275,7 @@ class DualArmSystem:
         # 更新右臂状态
         self.right_arm.update(self.joystick)
 
-    def get_status(self):
+    def get_status(self) -> dict:
         if self.joystick.get_button(self.reset_button[0]) and self.joystick.get_button(self.reset_button[1]):
             return {
                 'left': self.left_arm.reset(),

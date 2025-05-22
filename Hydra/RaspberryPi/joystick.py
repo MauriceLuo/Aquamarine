@@ -5,14 +5,14 @@ from utils import *
 
 
 class Joystick:
-    def __init__(self, joystick_num, pidbutton_num):
+    def __init__(self, joystick_num, pidbutton_num) -> None:
         self.joystick_num = joystick_num
         self.pidbutton_num = pidbutton_num
 
         self.joystick = pygame.joystick.Joystick(self.joystick_num)
         self.joystick.init
 
-    def update(self):
+    def update(self) -> None:
 
         self.joyX = round(self.joystick.get_axis(0), 3)
         self.joyY = -round(self.joystick.get_axis(1), 3)
@@ -60,7 +60,7 @@ class Joystick:
 
         self.pidButton = self.joystick.get_button(self.pidbutton_num)
 
-    def get_status(self):
+    def get_status(self) -> dict:
         ThrusterPWM = {
             'leftFront': self.leftFront,
             'rightFront': self.rightFront,

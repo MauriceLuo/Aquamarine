@@ -1,9 +1,9 @@
-def map_range(x, in_min, in_max, out_min, out_max):
+def map_range(x, in_min, in_max, out_min, out_max) -> int:
     """Maps a value from one range to another."""
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
 
-def deadzone_normalise(input_value, minimum, maximum):
+def deadzone_normalise(input_value, minimum, maximum) -> float:
     """
     Applies a deadzone to the input value. Values between `minimum` and `maximum` are set to 0.
     Values below `minimum` are mapped from [-1.0, minimum] to [-1.0, 0].
@@ -20,7 +20,7 @@ def deadzone_normalise(input_value, minimum, maximum):
         return float(map_range(input_value, maximum, 1.0, 0.0, 1.0))
 
 
-def apply_deadzone(input_value, deadzonemax, deadzonemin):
+def apply_deadzone(input_value, deadzonemax, deadzonemin) -> float:
     if -deadzonemin <= input_value <= deadzonemax:
         # Inside the deadzone
         return 0.000
@@ -32,5 +32,5 @@ def apply_deadzone(input_value, deadzonemax, deadzonemin):
         return (input_value + deadzonemin) / (1.000 - deadzonemin)
 
 
-def constrain(value, min_val, max_val):
+def constrain(value, min_val, max_val) -> float:
     return max(min_val, min(max_val, value))

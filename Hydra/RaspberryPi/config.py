@@ -1,4 +1,4 @@
-left_config = {
+left_config: dict = {
     'is_right': False,
     'deadzone': 0.15,
 
@@ -61,7 +61,7 @@ left_config = {
     'mani_step': 60
 }
 
-right_config = {
+right_config: dict = {
     'is_right': True,
     'deadzone': 0.15,
 

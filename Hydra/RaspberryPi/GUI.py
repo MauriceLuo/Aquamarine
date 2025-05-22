@@ -78,7 +78,7 @@ width = pygame.display.get_window_size()[1]
 print(pygame.display.get_window_size()[0], pygame.display.get_window_size()[1])
 
 
-def draw_grid(markerCoord):
+def draw_grid(markerCoord) -> None:
 
     graphSize = 512
     graphSurface = pygame.Surface((graphSize, graphSize))

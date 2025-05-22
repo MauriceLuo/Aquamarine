@@ -1,4 +1,4 @@
-import serial  # type: ignore
+import serial
 import time
 import pygame
 import Manipulator_Library as mani
