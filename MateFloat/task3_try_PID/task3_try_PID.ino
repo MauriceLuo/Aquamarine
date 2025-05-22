@@ -9,6 +9,15 @@ Servo myServo;
 MS5837 sensor;
 ESP32Time rtc(0);
 
+//variables for PID
+float Kp = 38.0, Ki = 0.0, Kd = 0.0;
+float integral = 0, lastError = 0;
+unsigned long lastTime = 0;
+unsigned long now;
+float PID_goal = 1.25;
+float dt, error, proportional, derivative, output;
+
+
 #define goal_depth 2.5  //in m
 int old_time = 0;
 int state = 0;
@@ -47,11 +56,11 @@ void setup() {
 
   WiFi.mode(WIFI_STA);
 
-  // ESP32 specific servo setup
-  ESP32PWM::allocateTimer(0);
-  ESP32PWM::allocateTimer(1);
-  ESP32PWM::allocateTimer(2);
-  ESP32PWM::allocateTimer(3);
+  // // ESP32 specific servo setup
+  // ESP32PWM::allocateTimer(0);
+  // ESP32PWM::allocateTimer(1);
+  // ESP32PWM::allocateTimer(2);
+  // ESP32PWM::allocateTimer(3);
 
   // Standard 50Hz PWM for servos
   myServo.setPeriodHertz(50);
@@ -63,11 +72,12 @@ void setup() {
   myServo.write(0);
 
   //init esp_now
-  if (esp_now_init() != ESP_OK) {
-    Serial.println("Error initializing ESP-NOW");
-    while(1);
-    return;
-  }
+  esp_now_init();
+  // if (esp_now_init() != ESP_OK) {
+  //   Serial.println("Error initializing ESP-NOW");
+  //   while (1);
+  //   return;
+  // }
 
   // Register the send callback
   esp_now_register_send_cb(OnDataSent);
@@ -80,35 +90,52 @@ void setup() {
 
 
   // Add peer
-  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-    Serial.println("Failed to add peer");
-    return;
-  }
+  esp_now_add_peer(&peerInfo);
+  // if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+  //   Serial.println("Failed to add peer");
+  //   return;
+  // }
+  myServo.write(90);
   delay(1000);
 }
 
 void loop() {
-  
-  sensor.read();
-  depth = sensor.depth();
 
-  if (profile_time < 2){
+  sensor.read();
+  depth = sensor.depth() + 0.08;
+
+  if (profile_time < 2) {
     switch (state) {
       case 0:
-        if (depth < goal_depth - 0.2) {
-          angle = 180;  //pull the piston
-          Serial.println("pull");
+        if (depth < goal_depth || depth > goal_depth + 0.3) {
+          now = millis();
+          dt = (now - lastTime) / 1000.0;
+          lastTime = now;
+
+          // 误差计算（实际深度 - 目标深度）
+          error = depth - PID_goal;
+
+          // PID 计算
+          proportional = Kp * error;
+          integral += Ki * error * dt;
+          derivative = Kd * (error - lastError) / dt;
+          lastError = error;
+
+          // 积分限幅
+          integral = constrain(integral, -200, 200);
+
+          // 总控制量
+          output = proportional + integral + derivative;
+
+          // 映射到舵机角度（正输出 → 上浮）
+          angle = constrain(output, -100, 100);
+          angle = map(angle, 100, -100, 0, 180);  // 确保方向正确
+          angle = constrain(angle, 0, 180);
+        } else {
+          angle = 90;
         }
 
-        if (depth > goal_depth + 0.2) {
-          angle = 9;  //push the piston
-          Serial.println("pull");
-        }
-        if (depth < goal_depth + 0.2 && depth < goal_depth - 0.2) {
-          angle = 90;  //stop
-        }
-
-        if (depth >= goal_depth - 0.5 && depth >= goal_depth + 0.5) {
+        if (depth >= goal_depth - 0.5 && depth <= goal_depth + 0.5) {
           count_time += millis() - old_time;
         }
         if (count_time > 46000) {
@@ -119,6 +146,7 @@ void loop() {
         break;
       case 1:
         angle = 9;  //push the piston
+        myServo.write(9);
         if (depth >= 0.2) {
           angle = 9;
         } else {
@@ -144,7 +172,6 @@ void loop() {
         send_pointer += 1;
         break;
     }
-
     myServo.write(angle);
 
     unsigned long currentMillis = millis();
@@ -155,9 +182,27 @@ void loop() {
       snprintf(msgPacket[pointer], sizeof(msgPacket[pointer]), "%s %.2fm %dms", sendTime, depth, count_time);
       pointer += 1;
     };
+    Serial.print("SendTime:");
     Serial.println(sendTime);
+    Serial.print("depth:");
     Serial.println(depth);
-    delay(100);
+    Serial.print("count_time:");
+    Serial.println(count_time);
+    Serial.print("angle:");
+    Serial.println(angle);
+    // Display Results on Serial Monitor
+    Serial.print("error: ");
+    Serial.print(error);
+    Serial.print(" ");
+    Serial.print("proportional:");
+    Serial.print(proportional);
+    Serial.print(" ");
+    Serial.print("integral:");
+    Serial.print(integral);
+    Serial.print(" ");
+    Serial.print("derivative:");
+    Serial.println(derivative);
+    delay(500);
   } else {
     myServo.write(9);
   }
