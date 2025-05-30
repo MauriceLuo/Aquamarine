@@ -1,3 +1,5 @@
+import random
+
 def map_range(x, in_min, in_max, out_min, out_max) -> int:
     """Maps a value from one range to another."""
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
@@ -34,3 +36,25 @@ def apply_deadzone(input_value, deadzonemax, deadzonemin) -> float:
 
 def constrain(value, min_val, max_val) -> float:
     return max(min_val, min(max_val, value))
+
+#get ph value
+output_ph : float = 7
+def ph_value(target: float, button: bool) -> float:
+    global output_ph
+    direction:float = 0
+    step = 0.1
+    if output_ph > target:
+        direction = -1.0
+    elif output_ph < target:
+        direction = 1.0
+    else:
+        direction = 0
+    
+    if button and direction != 0:
+        output_ph += direction * step
+        
+    if not button and output_ph != 7:
+        output_ph -= direction * step
+    
+    output_ph = round(output_ph,3)
+    return round(output_ph + (random.randrange(-20,20)/100),3)
