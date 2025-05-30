@@ -306,6 +306,9 @@ void loop() {
         Thruster[i+4] = PWM[4] + pid_val[i];
       }
 
+      Thruster[4] = map(Thruster[4],4000,8000,8000,4000);
+      Thruster[6] = map(Thruster[6],4000,8000,8000,4000);
+
       for (int i = 0;i < 8; i++){
         Thruster[i] = constrain(Thruster[i], vertThrustMin, vertThrustMax);
       }
