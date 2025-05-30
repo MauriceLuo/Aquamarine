@@ -37,6 +37,11 @@ def apply_deadzone(input_value, deadzonemax, deadzonemin) -> float:
 def constrain(value, min_val, max_val) -> float:
     return max(min_val, min(max_val, value))
 
+
+def low_pass_filter(prev_value, new_value, alpha = 0.85):
+    return int(alpha * prev_value + (1 - alpha) * new_value)
+
+
 #get ph value
 output_ph : float = 7
 def ph_value(target: float, button: bool) -> float:

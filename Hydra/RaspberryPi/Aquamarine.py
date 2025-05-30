@@ -41,6 +41,15 @@ if __name__ == '__main__':
 
     lastButtonState = 0
     isAutoLevel = 0
+    
+    thruster_status = {
+        'leftFront': 6000,
+        'rightFront': 6000,
+        'leftBack': 6000,
+        'rightBack': 6000,
+        'vertical': 6000,
+        'pidButton': 0
+    }
 
     dt = 0.05
     last_time = time.time()
@@ -54,7 +63,12 @@ if __name__ == '__main__':
             mani_status = controller.get_status()  # Get Manipulator PWM
 
             joy.update()
-            thruster_status = joy.get_status()
+
+            thruster_status_new = joy.get_status()
+            for index, key in enumerate(thruster_status_new):
+                if index != (len(thruster_status_new)-1):
+                    thruster_status[key] = low_pass_filter(thruster_status[key], thruster_status_new[key], 0.85)
+                
 
             currentButtonState = thruster_status["pidButton"]
             if lastButtonState == 0 and currentButtonState == 1:
