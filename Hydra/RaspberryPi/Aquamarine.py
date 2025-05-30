@@ -84,13 +84,6 @@ if __name__ == '__main__':
 
             joy.update()
 
-            thruster_status_new = joy.get_status()
-            for index, key in enumerate(thruster_status_new):
-                if index != (len(thruster_status_new)-1):
-                    thruster_status[key] = low_pass_filter(thruster_status[key], thruster_status_new[key], 0.85)
-                
-            thruster_status["pidButton"] = thruster_status_new["pidButton"]
-
             currentButtonState = thruster_status["pidButton"]
             if lastButtonState == 0 and currentButtonState == 1:
                 isAutoLevel = 1 - isAutoLevel
