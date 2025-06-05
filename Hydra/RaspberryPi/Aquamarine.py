@@ -15,6 +15,11 @@ Kp = "050"
 Ki = "000"
 Kd = "000"
 
+#PID 常数定义（xx.x）
+Kp = "050"
+Ki = "000"
+Kd = "000"
+
 if __name__ == '__main__':
 
     pygame.init()
@@ -83,7 +88,7 @@ if __name__ == '__main__':
             mani_status = controller.get_status()  # Get Manipulator PWM
 
             joy.update()
-
+            
             currentButtonState = thruster_status["pidButton"]
             if lastButtonState == 0 and currentButtonState == 1:
                 isAutoLevel = 1 - isAutoLevel
