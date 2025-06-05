@@ -7,8 +7,9 @@
 int vertThrustMax = 7100;
 int vertThrustMin = 4800;
 
-// PID参数（需要实际调试）
-double Kp = 5.0, Ki = 0, Kd = 0;
+// PID参数（初始化）
+//double Kp = 5.0, Ki = 0, Kd = 0;
+double pidConst[3] = {5.0, 0, 0};
 // double setpointRoll = 0, setpointPitch = 0;  // 水平状态目标值
 
 // PID目标值改为动态设置
@@ -19,8 +20,8 @@ double inputRoll, inputPitch;
 double outputRoll, outputPitch;
 
 // 创建PID控制器实例
-PID rollPID(&inputRoll, &outputRoll, &setpointRoll, Kp, Ki, Kd, DIRECT);
-PID pitchPID(&inputPitch, &outputPitch, &setpointPitch, Kp, Ki, Kd, DIRECT);
+PID rollPID(&inputRoll, &outputRoll, &setpointRoll, pidConst[0] , pidConst[1], pidConst[2], DIRECT);
+PID pitchPID(&inputPitch, &outputPitch, &setpointPitch, pidConst[0] , pidConst[1], pidConst[2], DIRECT);
 
 // 新增初始角度存储变量
 float angle_init[2] = { 0 };  // [0]: Roll初始值, [1]: Pitch初始值
@@ -271,6 +272,10 @@ void loop() {
       int isAutoLevelEnable = 0;
       String substring = input.substring(52, 53);
       isAutoLevelEnable = substring.toInt();
+      for (int i = 0; i < 3; i++){
+        String substring = input.substring(i * 4 + 53, (i + 1) * 3 + 53);
+        pidConst[i] = substring.toInt()/10;
+      }
 
       if (isAutoLevelEnable == 1) {
         rollPID.SetMode(AUTOMATIC);
@@ -281,8 +286,8 @@ void loop() {
       else {
         rollPID.SetMode(MANUAL);
         pitchPID.SetMode(MANUAL);
-        rollPID.SetTunings(Kp, Ki, Kd);
-        pitchPID.SetTunings(Kp, Ki, Kd);
+        rollPID.SetTunings(pidConst[0] , pidConst[1], pidConst[2]);
+        pitchPID.SetTunings(pidConst[0] , pidConst[1], pidConst[2]);
         outputPitch = 0;
         outputRoll = 0;
         for (int i; i < 4; i++) {
