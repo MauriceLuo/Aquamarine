@@ -8,6 +8,11 @@ from config import *
 from utils import *
 
 
+#PID 常数定义（xx.x）
+Kp = "050"
+Ki = "000"
+Kd = "000"
+
 if __name__ == '__main__':
 
     pygame.init()
@@ -69,6 +74,7 @@ if __name__ == '__main__':
                 if index != (len(thruster_status_new)-1):
                     thruster_status[key] = low_pass_filter(thruster_status[key], thruster_status_new[key], 0.85)
                 
+            thruster_status["pidButton"] = thruster_status_new["pidButton"]
 
             currentButtonState = thruster_status["pidButton"]
             if lastButtonState == 0 and currentButtonState == 1:
@@ -90,7 +96,8 @@ if __name__ == '__main__':
                 f"{mani_status['right']['arm']}"
                 f"{mani_status['right']['wrist']}"
                 f"{mani_status['right']['manipulator']}"
-                f"{isAutoLevel}\n".encode()
+                f"{isAutoLevel}"
+                f"{Kp}{Ki}{Kd}\n".encode()
             )
 
             print(
@@ -107,7 +114,8 @@ if __name__ == '__main__':
                 f"{mani_status['right']['arm']},"
                 f"{mani_status['right']['wrist']},"
                 f"{mani_status['right']['manipulator']},"
-                f"{isAutoLevel}"
+                f"{isAutoLevel},"
+                f"{Kp},{Ki},{Kd}"
             )
 
             """
