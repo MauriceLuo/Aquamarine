@@ -9,7 +9,7 @@ from utils import *
 
 
 #PID 常数定义（xx.x）
-Kp = "000"
+Kp = "050"
 Ki = "000"
 Kd = "000"
 
