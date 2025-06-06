@@ -272,8 +272,9 @@ void loop() {
       int isAutoLevelEnable = 0;
       String substring = input.substring(52, 53);
       isAutoLevelEnable = substring.toInt();
+
       for (int i = 0; i < 3; i++){
-        String substring = input.substring(i * 4 + 53, (i + 1) * 3 + 53);
+        String substring = input.substring(i * 3 + 53, (i + 1) * 3 + 53);
         pidConst[i] = substring.toInt()/10;
       }
 
