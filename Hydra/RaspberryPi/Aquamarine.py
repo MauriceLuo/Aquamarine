@@ -9,10 +9,7 @@ from utils import *
 
 
 #PID 常数定义（xx.x）
-<<<<<<< HEAD
-=======
 Kp = "050"
->>>>>>> pidConst_Rpi
 Ki = "000"
 Kd = "000"
 
@@ -117,11 +114,8 @@ if __name__ == '__main__':
                 f"{mani_status['right']['arm']},"
                 f"{mani_status['right']['wrist']},"
                 f"{mani_status['right']['manipulator']},"
-<<<<<<< HEAD
-=======
                 f"{isAutoLevel},"
                 f"{Kp},{Ki},{Kd}"
->>>>>>> pidConst_Rpi
             )
 
             """
