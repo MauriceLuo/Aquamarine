@@ -261,7 +261,7 @@ void loop() {
     rs485Serial.print(phValue);
     rs485Serial.print(",");
 
-    if (input.length() == 53) {
+    if (input.length() == 62) {
 
       for (int i = 0; i < 13; i++) {
         String substring = input.substring(i * 4, (i + 1) * 4);  // Extract 4 characters at a time
