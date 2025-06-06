@@ -74,6 +74,7 @@ if __name__ == '__main__':
                 if index != (len(thruster_status_new)-1):
                     thruster_status[key] = low_pass_filter(thruster_status[key], thruster_status_new[key], 0.85)
                 
+            thruster_status["pidButton"] = thruster_status_new["pidButton"]
 
             currentButtonState = thruster_status["pidButton"]
             if lastButtonState == 0 and currentButtonState == 1:
