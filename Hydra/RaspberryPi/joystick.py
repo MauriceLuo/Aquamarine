@@ -11,6 +11,14 @@ class Joystick:
 
         self.joystick = pygame.joystick.Joystick(self.joystick_num)
         self.joystick.init
+        self.thruster_pwm_prev = {
+            'leftFront': 6000,
+            'rightFront': 6000,
+            'leftBack': 6000,
+            'rightBack': 6000,
+            'vertical': 6000,
+            'pidButton': 0
+        }
 
     def update(self) -> None:
 
@@ -61,7 +69,7 @@ class Joystick:
         self.pidButton = self.joystick.get_button(self.pidbutton_num)
 
     def get_status(self) -> dict:
-        ThrusterPWM = {
+        thruster_pwm = {
             'leftFront': self.leftFront,
             'rightFront': self.rightFront,
             'leftBack': self.leftBack,
@@ -69,4 +77,9 @@ class Joystick:
             'vertical': self.vertical,
             'pidButton': self.pidButton
         }
-        return ThrusterPWM
+        for index, key in enumerate(thruster_pwm):
+            if index != (len(thruster_pwm)-1):
+                self.thruster_pwm_prev[key] = low_pass_filter(self.thruster_pwm_prev[key], thruster_pwm[key], 0.85)
+                
+        self.thruster_pwm_prev["pidButton"] = self.pidButton
+        return self.thruster_pwm_prev
