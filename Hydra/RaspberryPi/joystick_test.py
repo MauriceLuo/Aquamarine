@@ -8,6 +8,8 @@ joy.init()
 
 print(f"Available joysticks: {pygame.joystick.get_count()}")
 print(f"Initialized joysticks: {joysticks}")
+for i in range(pygame.joystick.get_count()):
+    print(f"Joystick {i}: {pygame.joystick.Joystick(i).get_name()}")
 
 running = True
 while running:

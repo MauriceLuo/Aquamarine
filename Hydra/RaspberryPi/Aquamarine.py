@@ -7,6 +7,8 @@ import joystick
 from config import *
 from utils import *
 
+joystick_num = 0
+controller_num = 1
 
 #PID 常数定义（xx.x）
 Kp = "050"
@@ -19,12 +21,25 @@ if __name__ == '__main__':
     pygame.joystick.init()
 
     print(pygame.joystick.get_count())
-
-    joy = joystick.Joystick(0, 1)
+    while pygame.joystick.get_count() != 2:
+        print("Error: Not enough joysticks connected.")
+        print(f"Available joysticks: {pygame.joystick.get_count()}")
+        pygame.joystick.quit()
+        pygame.joystick.init()
+        time.sleep(1)
+    
+    for i in range(pygame.joystick.get_count()):
+        if pygame.joystick.Joystick(i).get_name() == "Logitech Extreme 3D Pro":
+            joystick_num = i
+        if pygame.joystick.Joystick(i).get_name() == "Logitech Gamepad F710":
+            controller_num = i
+    print(f"Joystick number: {joystick_num}, Controller number: {controller_num}")
+    
+    joy = joystick.Joystick(joystick_num, 1)
     controller = mani.DualArmSystem(    # Manipulator initialize
         left_config,
         right_config,
-        1,
+        controller_num,
         [9, 10]
     )
 
