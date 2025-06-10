@@ -1,7 +1,7 @@
 # Aquamarine ROV Control System
 
-![ROV Visualization Demo](https://via.placeholder.com/800x400.png?text=ROV+GUI+and+Hardware)  
-*(Replace with actual screenshots of the GUI and hardware setup)*
+![ROV Visualization Demo](./Hydra/hydra.jpg)  
+
 
 A comprehensive control system for underwater Remotely Operated Vehicles (ROVs), combining Python-based GUI control, Arduino firmware for motor/sensor management, and advanced stabilization algorithms.
 
