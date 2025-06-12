@@ -10,7 +10,7 @@ MS5837 sensor;
 ESP32Time rtc(0);
 
 //variables for PID
-float Kp = 50, Ki = 0.0, Kd = 0.0;
+float Kp = 50, Ki = 5.0, Kd = 5.0;
 float integral = 0, lastError = 0;
 unsigned long lastTime = 0;
 unsigned long now;
@@ -18,7 +18,7 @@ unsigned long now;
 float dt, error, proportional, derivative, output;
 
 
-#define goal_depth 1.5  //in m
+#define goal_depth 0.8  //in m
 int old_time = 0;
 int state = 0;
 int pointer = 0;
@@ -114,7 +114,6 @@ void setup() {
   delay(1000);
   float_count_time = millis();
 }
-
 void loop() {
 
   sensor.read();
@@ -123,42 +122,41 @@ void loop() {
   if (profile_time < 2) {
     switch (state) {
       case 0:
-        if (depth < goal_depth - 0.3 || depth > goal_depth + 0.3) {
-          now = millis();
-          dt = (now - lastTime) / 1000.0;
-          lastTime = now;
+        // if (depth < goal_depth - 0.3 || depth > goal_depth + 0.3) {
+        now = millis();
+        dt = (now - lastTime) / 1000.0;
+        lastTime = now;
 
-          // 误差计算（实际深度 - 目标深度）
-          error = depth - goal_depth;
+        // 误差计算（实际深度 - 目标深度）
+        error = depth - goal_depth;
 
-          // PID 计算
-          proportional = Kp * error;
-          integral += Ki * error * dt;
-          derivative = Kd * (error - lastError) / dt;
-          lastError = error;
+        // PID 计算
+        proportional = Kp * error;
+        integral += Ki * error * dt;
+        derivative = Kd * (error - lastError) / dt;
+        lastError = error;
 
-          // 积分限幅
-          integral = constrain(integral, -200, 200);
+        // 积分限幅
+        integral = constrain(integral, -200, 200);
 
-          // 总控制量
-          output = proportional + integral + derivative;
+        // 总控制量
+        output = proportional + integral + derivative;
 
-          // 映射到舵机角度（正输出 → 上浮）
-          angle = constrain(output, -100, 100);
-          angle = map(angle, 100, -100, 0, 180);  // 确保方向正确
-          angle = constrain(angle, 0, 180);
-        } else {
-          angle = 90;
-        }
+        // 映射到舵机角度（正输出 → 上浮）
+        angle = constrain(output, -100, 100);
+        angle = map(angle, 100, -100, 0, 180);  // 确保方向正确
+        angle = constrain(angle, 0, 140);
+        // } else {
+        //   angle = 70;
+        // }
 
         if (depth >= goal_depth - 0.5 && depth <= goal_depth + 0.5) {
           count_time += millis() - old_time;
         }
-        if (count_time > 46000) {
+        if (count_time > 50000) {
           state = 1;
           count_time = 0;
         }
-        old_time = millis();
         break;
       case 1:
         angle = 9;  //push the piston
@@ -183,10 +181,16 @@ void loop() {
           }
           delay(500);
         };
+        integral = 0;
+        lastError = 0;
+        myServo.write(9);
+        delay(1000);
+        lastTime = millis();
         state = 0;
         profile_time += 1;
         send_pointer += 1;
         float_count_time = 0;
+
         break;
 
       case 3:
@@ -214,6 +218,7 @@ void loop() {
       myServo.write(0);
       state = 3;
     }
+    old_time = millis();
     // Serial.print("SendTime:");
     // Serial.println(sendTime);
     Serial.print("depth:");
