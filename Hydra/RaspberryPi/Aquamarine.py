@@ -29,7 +29,7 @@ if __name__ == '__main__':
         time.sleep(1)
     
     for i in range(pygame.joystick.get_count()):
-        if pygame.joystick.Joystick(i).get_name() == "Logitech Extreme 3D Pro":
+        if pygame.joystick.Joystick(i).get_name() == "Logitech Extreme 3D pro":
             joystick_num = i
         if pygame.joystick.Joystick(i).get_name() == "Logitech Gamepad F710":
             controller_num = i
