@@ -33,8 +33,8 @@ void loop() {
   // while (Serial.available() == 0) {
   //   delay(10);  // Small delay to prevent hogging CPU
   // }        
-  pos += 20;  
-  myServo.write(pos); 
+  myServo.write(pos);
+  pos += 20;
   delay(10000);
   // pos += 20;  
   // delay(20000);

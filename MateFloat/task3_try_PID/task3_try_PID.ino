@@ -144,10 +144,10 @@ void loop() {
 
           // 映射到舵机角度（正输出 → 上浮）
           angle = constrain(output, -100, 100);
-          angle = map(angle, 100, -100, 0, 140);  // 确保方向正确
-          angle = constrain(angle, 0, 140);
+          angle = map(angle, 100, -100, 0, 100);  // 确保方向正确
+          angle = constrain(angle, 0, 100);
         } else {
-          angle = 70;
+          angle = 50;
         }
 
         if (depth >= goal_depth - 0.5 && depth <= goal_depth + 0.5) {
@@ -160,13 +160,14 @@ void loop() {
 
         break;
       case 1:
-        angle = 9;  //push the piston
-        myServo.write(9);
+        angle = 0;  //push the piston
+        myServo.write(0);
         if (depth >= 0.5) {
-          angle = 9;
+          angle = 0;
         } else {
           strncpy(msgPacket[pointer + 1], "done", sizeof(msgPacket[pointer + 1]));
           state = 2;
+          float_count_time = 0;
         };
         break;
 
@@ -180,12 +181,12 @@ void loop() {
             send_pointer++;
             sendSuccess = !sendSuccess;
           }
-          delay(500);
+          delay(100);
         };
         integral = 0;
         lastError = 0;
         myServo.write(9);
-        delay(1000);
+        delay(500);
         lastTime = millis();
         state = 0;
         profile_time += 1;
@@ -199,6 +200,7 @@ void loop() {
           myServo.write(0);
         }
         state = 2;
+        strncpy(msgPacket[pointer + 1], "done", sizeof(msgPacket[pointer + 1]));
         break;
     }
     myServo.write(angle);
