@@ -33,9 +33,9 @@ void loop() {
   // while (Serial.available() == 0) {
   //   delay(10);  // Small delay to prevent hogging CPU
   // }        
-  pos = 180 - pos;  
-  myServo.write(pos);
-  delay(5000);
+  pos += 20;  
+  myServo.write(pos); 
+  delay(10000);
   // pos += 20;  
   // delay(20000);
   // Serial.read(); // Clear any remaining characters (like newline)
