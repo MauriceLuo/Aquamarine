@@ -1,7 +1,7 @@
 // Include Libraries
 #include <esp_now.h>
 #include <WiFi.h>
-#define company_number "RN11" // 要改
+#define company_number "RN15" // 要改
 char sendMsg[32];
 
 
@@ -14,7 +14,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
 }
 
 void setup() {
-  // Set up Serial Monitor
+  // Set up Serial Monitor=
   Serial.begin(115200);
   
   // Set ESP32 as a Wi-Fi Station
