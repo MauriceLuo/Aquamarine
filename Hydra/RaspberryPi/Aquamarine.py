@@ -7,6 +7,8 @@ import joystick
 from config import *
 from utils import *
 
+SERIAL = '/dev/ttyAMA1'
+
 joystick_num = 0
 controller_num = 1
 
@@ -45,7 +47,7 @@ if __name__ == '__main__':
 
     print("Joysticks initialized")
 
-    rs485 = serial.Serial('/dev/ttyAMA0', 57600, timeout=0)
+    rs485 = serial.Serial(SERIAL, 57600, timeout=0)
     if (rs485.isOpen() == False):
         rs485.open()
         rs485.flushInput()
